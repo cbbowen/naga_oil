@@ -73,7 +73,8 @@ impl Redirector {
                 | Statement::SubgroupBallot { .. }
                 | Statement::SubgroupGather { .. }
                 | Statement::SubgroupCollectiveOperation { .. }
-                | Statement::ImageAtomic { .. } => (),
+                | Statement::ImageAtomic { .. }
+                | Statement::MeshFunction(_) => (),
             }
         }
     }

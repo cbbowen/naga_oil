@@ -32,3 +32,8 @@ indexmap = "2"
 wgpu = { version = "27", features = ["naga-ir"] }
 futures-lite = "2"
 tracing-subscriber = { version = "0.3", features = ["std", "fmt"] }
+pollster = { version = "0.4", features = ["macro"] }
+
+[patch.crates-io]
+wgpu = { git = "https://github.com/cbbowen/wgpu.git", branch="support_align_in_wgsl_out" }
+naga = { git = "https://github.com/cbbowen/wgpu.git", branch="support_align_in_wgsl_out" }

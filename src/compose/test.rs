@@ -484,8 +484,8 @@ mod test {
     }
 
     #[cfg(feature = "test_shader")]
-    #[test]
-    fn additional_import() {
+    #[pollster::test]
+    async fn additional_import() {
         let mut composer = Composer::default();
         composer
             .add_composable_module(ComposableModuleDescriptor {
@@ -544,7 +544,7 @@ mod test {
             })
             .unwrap();
 
-        assert_eq!(test_shader(&mut composer), 2.0);
+        assert_eq!(test_shader(&mut composer).await, 2.0);
     }
 
     #[test]
@@ -1069,8 +1069,8 @@ mod test {
     }
 
     #[cfg(feature = "test_shader")]
-    #[test]
-    fn rusty_imports() {
+    #[pollster::test]
+    async fn rusty_imports() {
         let mut composer = Composer::default();
 
         composer
@@ -1097,7 +1097,7 @@ mod test {
             })
             .unwrap();
 
-        assert_eq!(test_shader(&mut composer), 36.0);
+        assert_eq!(test_shader(&mut composer).await, 36.0);
     }
 
     #[test]
@@ -1258,8 +1258,8 @@ mod test {
         output_eq!(wgsl, "tests/expected/problematic_expressions.txt");
     }
 
-    #[test]
-    fn test_atomics() {
+    #[pollster::test]
+    async fn test_atomics() {
         let mut composer = Composer::default();
 
         composer
@@ -1272,7 +1272,7 @@ mod test {
 
         // TODO enable this test when HLSL support is available
         if cfg!(feature = "test_shader") && false {
-            assert_eq!(test_shader(&mut composer), 28.0);
+            assert_eq!(test_shader(&mut composer).await, 28.0);
         }
 
         let module = composer
@@ -1339,8 +1339,8 @@ mod test {
         // output_eq!(wgsl, "tests/expected/raycast.txt");
     }
 
-    #[test]
-    fn test_modf() {
+    #[pollster::test]
+    async fn test_modf() {
         let mut composer =
             Composer::default().with_capabilities(naga::valid::Capabilities::RAY_QUERY);
 
@@ -1352,13 +1352,13 @@ mod test {
             })
             .unwrap();
 
-        let res = test_shader(&mut composer);
+        let res = test_shader(&mut composer).await;
         assert!(res.abs() < 1e-6);
     }
 
-    #[test]
+    #[pollster::test]
     #[should_panic] // Diagnostic filters not yet supported
-    fn test_diagnostic_filters() {
+    async fn test_diagnostic_filters() {
         let mut composer = Composer::default();
 
         composer
@@ -1371,7 +1371,7 @@ mod test {
 
         // TODO enable this test when HLSL support is available
         if cfg!(feature = "test_shader") && false {
-            assert_eq!(test_shader(&mut composer), 28.0);
+            assert_eq!(test_shader(&mut composer).await, 28.0);
         }
 
         let module = composer
@@ -1398,8 +1398,8 @@ mod test {
     }
 
     #[cfg(feature = "test_shader")]
-    #[test]
-    fn effective_defs() {
+    #[pollster::test]
+    async fn effective_defs() {
         let mut composer = Composer::default();
 
         composer
@@ -1473,13 +1473,13 @@ mod test {
                 })
                 .unwrap();
 
-            assert_eq!(test_shader(&mut composer), expected);
+            assert_eq!(test_shader(&mut composer).await, expected);
         }
     }
 
     // actually run a shader and extract the result
     // needs the composer to contain a module called "test_module", with a function called "entry_point" returning an f32.
-    fn test_shader(composer: &mut Composer) -> f32 {
+    async fn test_shader(composer: &mut Composer) -> f32 {
         let module = composer
             .make_naga_module(NagaModuleDescriptor {
                 source: include_str!("tests/compute_test.wgsl"),
@@ -1491,6 +1491,7 @@ mod test {
         let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
         let adapter = instance
             .enumerate_adapters(wgpu::Backends::all())
+            .await
             .into_iter()
             .next()
             .unwrap();

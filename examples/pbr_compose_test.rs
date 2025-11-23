@@ -138,10 +138,11 @@ fn test_compose_final_module(n: usize, composer: &mut Composer) {
 }
 
 // make shader module from string
-fn test_wgsl_string_compile(n: usize) {
+async fn test_wgsl_string_compile(n: usize) {
     let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
     let adapter = instance
         .enumerate_adapters(wgpu::Backends::all())
+        .await
         .into_iter()
         .next()
         .unwrap();
@@ -161,10 +162,11 @@ fn test_wgsl_string_compile(n: usize) {
 }
 
 // make shader module from composed naga
-fn test_composer_compile(n: usize, composer: &mut Composer) {
+async fn test_composer_compile(n: usize, composer: &mut Composer) {
     let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
     let adapter = instance
         .enumerate_adapters(wgpu::Backends::all())
+        .await
         .into_iter()
         .next()
         .unwrap();
@@ -189,7 +191,8 @@ fn test_composer_compile(n: usize, composer: &mut Composer) {
     }
 }
 
-fn main() {
+#[pollster::main]
+async fn main() {
     println!("running 1000 full composer builds (no caching)");
     let start = std::time::Instant::now();
     for _ in 0..1000 {
@@ -211,13 +214,13 @@ fn main() {
 
     println!("running 10000 wgpu string compiles");
     let start = std::time::Instant::now();
-    test_wgsl_string_compile(10000);
+    test_wgsl_string_compile(10000).await;
     let end = std::time::Instant::now();
     println!("10000 string compiles: {:?}", end - start);
 
     println!("running 10000 composer builds + wgpu module compiles");
     let start = std::time::Instant::now();
-    test_composer_compile(10000, &mut composer);
+    test_composer_compile(10000, &mut composer).await;
     let end = std::time::Instant::now();
     println!("10000 module compiles: {:?}", end - start);
 }

@@ -518,7 +518,8 @@ impl<'a> DerivedModule<'a> {
                     | Statement::Continue
                     | Statement::Kill
                     | Statement::MemoryBarrier(_)
-                    | Statement::ControlBarrier(_) => stmt.clone(),
+                    | Statement::ControlBarrier(_)
+                    | Statement::MeshFunction(_) => stmt.clone(),
                 }
             })
             .collect();
@@ -908,6 +909,8 @@ impl<'a> DerivedModule<'a> {
                 workgroup_size: ep.workgroup_size,
                 function: self.localize_function(&ep.function),
                 workgroup_size_overrides: ep.workgroup_size_overrides,
+                mesh_info: None,
+                task_payload: None,
             })
             .collect();
 
