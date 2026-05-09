@@ -139,7 +139,7 @@ fn test_compose_final_module(n: usize, composer: &mut Composer) {
 
 // make shader module from string
 async fn test_wgsl_string_compile(n: usize) {
-    let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
+    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle());
     let adapter = instance
         .enumerate_adapters(wgpu::Backends::all())
         .await
@@ -163,7 +163,7 @@ async fn test_wgsl_string_compile(n: usize) {
 
 // make shader module from composed naga
 async fn test_composer_compile(n: usize, composer: &mut Composer) {
-    let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
+    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle());
     let adapter = instance
         .enumerate_adapters(wgpu::Backends::all())
         .await

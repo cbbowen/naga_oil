@@ -74,7 +74,8 @@ impl Redirector {
                 | Statement::SubgroupGather { .. }
                 | Statement::SubgroupCollectiveOperation { .. }
                 | Statement::ImageAtomic { .. }
-                | Statement::MeshFunction(_) => (),
+                | Statement::RayPipelineFunction(_)
+                | Statement::CooperativeStore { .. } => (),
             }
         }
     }
