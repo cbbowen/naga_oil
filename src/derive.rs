@@ -1,10 +1,12 @@
 use indexmap::IndexMap;
 use naga::{
-    Arena, AtomicFunction, Block, Constant, CooperativeData, EntryPoint, Expression, Function,
+    Arena, AtomicFunction, Block, Constant, EntryPoint, Expression, Function,
     FunctionArgument, FunctionResult, GatherMode, GlobalVariable, Handle, ImageQuery,
-    LocalVariable, MemoryDecorations, Module, Override, RayPipelineFunction, SampleLevel, Span,
+    LocalVariable, Module, Override, SampleLevel, Span,
     Statement, StructMember, SwitchCase, Type, TypeInner, UniqueArena,
 };
+// wgpu 29.0
+// use naga::{CooperativeData, MemoryDecorations, RayPipelineFunction};
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug, Default)]
@@ -132,7 +134,9 @@ impl<'a> DerivedModule<'a> {
                     | TypeInner::Atomic { .. }
                     | TypeInner::AccelerationStructure { .. }
                     | TypeInner::RayQuery { .. }
-                    | TypeInner::CooperativeMatrix { .. } => ty.inner.clone(),
+                    // wgpu 29.0
+                    // | TypeInner::CooperativeMatrix { .. }
+                    => ty.inner.clone(),
 
                     TypeInner::Pointer { base, space } => TypeInner::Pointer {
                         base: self.import_type(base),
@@ -214,7 +218,8 @@ impl<'a> DerivedModule<'a> {
                 binding: gv.binding,
                 ty: self.import_type(&gv.ty),
                 init: gv.init.map(|c| self.import_global_expression(c)),
-                memory_decorations: MemoryDecorations::default(),
+                // wgpu 29.0
+                // memory_decorations: MemoryDecorations::default(),
             };
 
             let span = self
@@ -431,35 +436,36 @@ impl<'a> DerivedModule<'a> {
                     Statement::Return { value } => Statement::Return {
                         value: map_expr_opt!(value),
                     },
-                    Statement::CooperativeStore {
-                        target,
-                        data:
-                            CooperativeData {
-                                pointer,
-                                stride,
-                                row_major,
-                            },
-                    } => Statement::CooperativeStore {
-                        target: map_expr!(target),
-                        data: CooperativeData {
-                            pointer: map_expr!(pointer),
-                            stride: map_expr!(stride),
-                            row_major: *row_major,
-                        },
-                    },
-                    Statement::RayPipelineFunction(fun) => {
-                        Statement::RayPipelineFunction(match fun {
-                            RayPipelineFunction::TraceRay {
-                                acceleration_structure,
-                                descriptor,
-                                payload,
-                            } => RayPipelineFunction::TraceRay {
-                                acceleration_structure: map_expr!(acceleration_structure),
-                                descriptor: map_expr!(descriptor),
-                                payload: map_expr!(payload),
-                            },
-                        })
-                    }
+                    // wgpu 29.0
+                    // Statement::CooperativeStore {
+                    //     target,
+                    //     data:
+                    //         CooperativeData {
+                    //             pointer,
+                    //             stride,
+                    //             row_major,
+                    //         },
+                    // } => Statement::CooperativeStore {
+                    //     target: map_expr!(target),
+                    //     data: CooperativeData {
+                    //         pointer: map_expr!(pointer),
+                    //         stride: map_expr!(stride),
+                    //         row_major: *row_major,
+                    //     },
+                    // },
+                    // Statement::RayPipelineFunction(fun) => {
+                    //     Statement::RayPipelineFunction(match fun {
+                    //         RayPipelineFunction::TraceRay {
+                    //             acceleration_structure,
+                    //             descriptor,
+                    //             payload,
+                    //         } => RayPipelineFunction::TraceRay {
+                    //             acceleration_structure: map_expr!(acceleration_structure),
+                    //             descriptor: map_expr!(descriptor),
+                    //             payload: map_expr!(payload),
+                    //         },
+                    //     })
+                    // }
                     Statement::RayQuery { query, fun } => Statement::RayQuery {
                         query: map_expr!(query),
                         fun: match fun {
@@ -790,31 +796,32 @@ impl<'a> DerivedModule<'a> {
             Expression::SubgroupOperationResult { ty } => Expression::SubgroupOperationResult {
                 ty: self.import_type(ty),
             },
-            Expression::CooperativeLoad {
-                columns,
-                rows,
-                role,
-                data:
-                    CooperativeData {
-                        pointer,
-                        stride,
-                        row_major,
-                    },
-            } => Expression::CooperativeLoad {
-                columns: *columns,
-                rows: *rows,
-                role: *role,
-                data: CooperativeData {
-                    pointer: map_expr!(pointer),
-                    stride: map_expr!(stride),
-                    row_major: *row_major,
-                },
-            },
-            Expression::CooperativeMultiplyAdd { a, b, c } => Expression::CooperativeMultiplyAdd {
-                a: map_expr!(a),
-                b: map_expr!(b),
-                c: map_expr!(c),
-            },
+            // wgpu 29.0
+            // Expression::CooperativeLoad {
+            //     columns,
+            //     rows,
+            //     role,
+            //     data:
+            //         CooperativeData {
+            //             pointer,
+            //             stride,
+            //             row_major,
+            //         },
+            // } => Expression::CooperativeLoad {
+            //     columns: *columns,
+            //     rows: *rows,
+            //     role: *role,
+            //     data: CooperativeData {
+            //         pointer: map_expr!(pointer),
+            //         stride: map_expr!(stride),
+            //         row_major: *row_major,
+            //     },
+            // },
+            // Expression::CooperativeMultiplyAdd { a, b, c } => Expression::CooperativeMultiplyAdd {
+            //     a: map_expr!(a),
+            //     b: map_expr!(b),
+            //     c: map_expr!(c),
+            // },
         };
 
         if !non_emitting_only || is_external {
@@ -967,7 +974,8 @@ impl<'a> DerivedModule<'a> {
                 workgroup_size_overrides: ep.workgroup_size_overrides,
                 mesh_info: None,
                 task_payload: None,
-                incoming_ray_payload: None,
+                // wgpu 29.0
+                // incoming_ray_payload: None,
             })
             .collect();
 

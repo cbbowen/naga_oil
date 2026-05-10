@@ -74,8 +74,10 @@ impl Redirector {
                 | Statement::SubgroupGather { .. }
                 | Statement::SubgroupCollectiveOperation { .. }
                 | Statement::ImageAtomic { .. }
-                | Statement::RayPipelineFunction(_)
-                | Statement::CooperativeStore { .. } => (),
+                // wgpu 29.0
+                // | Statement::RayPipelineFunction(_)
+                // | Statement::CooperativeStore { .. }
+                => (),
             }
         }
     }

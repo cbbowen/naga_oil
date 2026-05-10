@@ -1488,7 +1488,9 @@ mod test {
             })
             .unwrap();
 
-        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle());
+        // wgpu 29.0
+        // let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle());
+        let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
         let adapter = instance
             .enumerate_adapters(wgpu::Backends::all())
             .await
@@ -1533,7 +1535,9 @@ mod test {
             layout: Some(
                 &device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
                     label: None,
-                    bind_group_layouts: &[Some(&layout)],
+                    // wgpu 29.0
+                    // bind_group_layouts: &[Some(&layout)],
+                    bind_group_layouts: &[&layout],
                     immediate_size: 0,
                 }),
             ),
